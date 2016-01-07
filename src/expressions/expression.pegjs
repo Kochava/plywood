@@ -32,6 +32,7 @@ var possibleCalls = {
   'multiply': 1,
   'not': 1,
   'numberBucket': 1,
+  'partial': 1,
   'quantile': 1,
   'sort': 1,
   'split': 1,

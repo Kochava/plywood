@@ -860,6 +860,13 @@ return (start < 0 ?'-':'') + parts.join('.');
           };
         }
 
+        if (action instanceof PartialAction) {
+          return {
+            type: "partial",
+            expr: action.regexp
+          };
+        }
+
         if (action instanceof LookupAction) {
           return {
             type: "lookup",

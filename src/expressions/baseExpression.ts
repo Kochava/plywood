@@ -870,6 +870,10 @@ module Plywood {
       return this.performAction(new ExtractAction({ regexp: getString(re) }));
     }
 
+    public partial(re: string): ChainExpression {
+      return this.performAction(new PartialAction({ regexp: getString(re) }));
+    }
+
     public concat(...exs: any[]): ChainExpression {
       return this._performMultiAction('concat', exs);
     }
