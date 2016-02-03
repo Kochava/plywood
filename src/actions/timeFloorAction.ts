@@ -1,10 +1,10 @@
 module Plywood {
-  export class TimeBucketAction extends Action {
-    static fromJS(parameters: ActionJS): TimeBucketAction {
+  export class TimeFloorAction extends Action {
+    static fromJS(parameters: ActionJS): TimeFloorAction {
       var value = Action.jsToValue(parameters);
       value.duration = Duration.fromJS(parameters.duration);
       if (parameters.timezone) value.timezone = Timezone.fromJS(parameters.timezone);
-      return new TimeBucketAction(value);
+      return new TimeFloorAction(value);
     }
 
     public duration: Duration;
@@ -14,7 +14,7 @@ module Plywood {
       super(parameters, dummyObject);
       this.duration = parameters.duration;
       this.timezone = parameters.timezone;
-      this._ensureAction("timeBucket");
+      this._ensureAction("timeFloor");
       if (!Duration.isDuration(this.duration)) {
         throw new Error("`duration` must be a Duration");
       }
@@ -35,8 +35,8 @@ module Plywood {
     }
 
     public getOutputType(inputType: string): string {
-      this._checkInputTypes(inputType, 'TIME', 'TIME_RANGE');
-      return 'TIME_RANGE';
+      this._checkInputType(inputType, 'TIME');
+      return 'TIME';
     }
 
     protected _toStringParameters(expressionString: string): string[] {
@@ -59,7 +59,7 @@ module Plywood {
         var inV = inputFn(d, c);
         if (inV === null) return null;
         timezone = timezone || (c['timezone'] ? Timezone.fromJS(c['timezone']) : Timezone.UTC);
-        return TimeRange.timeBucket(inV, duration, timezone);
+        return duration.floor(inV, timezone);
       }
     }
 
@@ -68,9 +68,16 @@ module Plywood {
     }
 
     protected _getSQLHelper(dialect: SQLDialect, inputSQL: string, expressionSQL: string): string {
-      return dialect.timeBucketExpression(inputSQL, this.duration, this.timezone);
+      return dialect.timeFloorExpression(inputSQL, this.duration, this.timezone);
+    }
+
+    protected _foldWithPrevAction(prevAction: Action): Action {
+      if (prevAction.equals(this)) {
+        return this;
+      }
+      return null;
     }
   }
 
-  Action.register(TimeBucketAction);
+  Action.register(TimeFloorAction);
 }

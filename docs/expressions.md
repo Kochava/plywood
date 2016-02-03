@@ -7,6 +7,7 @@ Expressions can be expressed as JSON or composed via the provided operands.
 
 There are many ways of creating expressions to account for all the different ways in which Plywood can be used.
 
+
 **$**(*name*)
 
 Will create a reference expression that refers to the given name.
@@ -16,6 +17,7 @@ Writing `$('x')` is the same as parsing `$x`
 var ex = $('x');
 ex.compute({ x: 10 }).then(console.log); // => 10
 ```
+
 
 **r**(*value*)
 
@@ -48,6 +50,7 @@ Expression.EMPTY_STRING.equals(r(''));
 Expressions are designed to be composed by method chaining.
 All of the functions below operate on an expression and produce an expression in turn.
 
+
 *operand*.**performAction**(action: Action, markSimple?: boolean)
 
 Perform a specific action on an expression.
@@ -56,6 +59,7 @@ All the methods below create the appropriate action and then call this method.
 
 
 ### Basic arithmetic
+
 
 *operand*.**add**(...exs: any[])
 
@@ -67,6 +71,7 @@ var ex = $('x').add('$y', 1);
 ex.compute({ x: 10, y: 2 }).then(console.log); // => 13
 ```
 
+
 *operand*.**subtract**(...exs: any[])
 
 Subtracts the arguments from the operand.
@@ -76,6 +81,7 @@ Writing `$('x').subtract(1)` is the same as parsing `$x - 1`
 var ex = $('x').subtract('$y', 1);
 ex.compute({ x: 10, y: 2 }).then(console.log); // => 7
 ```
+
 
 *operand*.**negate**()
 
@@ -87,6 +93,7 @@ var ex = $('x').negate();
 ex.compute({ x: 10 }).then(console.log); // => -10
 ```
 
+
 *operand*.**multiply**(...exs: any[])
 
 Multiplies the operator by the arguments.
@@ -97,6 +104,7 @@ var ex = $('x').multiply('$y', 3);
 ex.compute({ x: 10, y: 2 }).then(console.log); // => 60
 ```
 
+
 *operand*.**divide**(...exs: any[])
 
 Divides the operator by the arguments.
@@ -106,6 +114,7 @@ Writing `$('x').divide(3)` is the same as parsing `$x / 3`
 var ex = $('x').divide('$y');
 ex.compute({ x: 10, y: 2 }).then(console.log); // => 5
 ```
+
 
 *operand*.**reciprocate**()
 
@@ -118,7 +127,8 @@ ex.compute({ x: 10 }).then(console.log); // => 0.1
 ```
 
 
-## Boolean predicates
+### Boolean predicates
+
 
 *operand*.**is**(ex: any)
 
@@ -130,6 +140,7 @@ var ex = $('x').is(5);
 ex.compute({ x: 10 }).then(console.log); // => false
 ```
 
+
 *operand*.**isnt**(ex: any)
 
 Checks that the operand and the given expression are not equal.
@@ -139,6 +150,7 @@ Writing `$('x').isnt(5)` is the same as parsing `$x != 5`
 var ex = $('x').isnt(5);
 ex.compute({ x: 10 }).then(console.log); // => true
 ```
+
 
 *operand*.**lessThan**(ex: any)
 
@@ -150,6 +162,7 @@ var ex = $('x').lessThan(5);
 ex.compute({ x: 10 }).then(console.log); // => false
 ```
 
+
 *operand*.**lessThanOrEqual**(ex: any)
 
 Checks that the operand is less than or equal the given expression.
@@ -159,6 +172,7 @@ Writing `$('x').lessThanOrEqual(5)` is the same as parsing `$x <= 5`
 var ex = $('x').lessThanOrEqual(5);
 ex.compute({ x: 10 }).then(console.log); // => false
 ```
+
 
 *operand*.**greaterThan**(ex: any)
 
@@ -170,6 +184,7 @@ var ex = $('x').greaterThan(5);
 ex.compute({ x: 10 }).then(console.log); // => true
 ```
 
+
 *operand*.**greaterThanOrEqual**(ex: any)
 
 Checks that the operand is greater than the given expression.
@@ -179,6 +194,7 @@ Writing `$('x').greaterThanOrEqual(5)` is the same as parsing `$x >= 5`
 var ex = $('x').greaterThanOrEqual(5);
 ex.compute({ x: 10 }).then(console.log); // => true
 ```
+
 
 *operand*.**contains**(ex: any, compare?: string)
 
@@ -190,6 +206,7 @@ var ex = $('str').contains('ello');
 ex.compute({ str: 'Hello World' }).then(console.log); // => true
 ```
 
+
 *operand*.**match**(re: string)
 
 Checks whether the operand matches the given RegExp that is provided as a string.
@@ -198,6 +215,7 @@ Checks whether the operand matches the given RegExp that is provided as a string
 var ex = $('str').match('^Hell.*d$');
 ex.compute({ str: 'Hello World' }).then(console.log); // => true
 ```
+
 
 *operand*.**in**(ex: any)
 
@@ -211,6 +229,7 @@ var ex = $('str').in(['hello', 'world']);
 ex.compute({ str: 'hello' }).then(console.log); // => true
 ```
 
+
 *operand*.**not**()
 
 Inverts the truth value of the operand.
@@ -221,6 +240,7 @@ var ex = $('x').not();
 ex.compute({ x: true }).then(console.log); // => false
 ```
 
+
 *operand*.**and**(...exs: any[])
 
 Performs a boolean AND operation on the operand and the given expressions.
@@ -230,6 +250,7 @@ Writing `$('x').and($('y'))` is the same as parsing `$x and $y`
 var ex = $('x').and($('y'));
 ex.compute({ x: true, y: false }).then(console.log); // => false
 ```
+
 
 *operand*.**or**(...exs: any[])
 
@@ -242,7 +263,8 @@ ex.compute({ x: true, y: false }).then(console.log); // => true
 ```
 
 
-## String manipulation
+### String manipulation
+
 
 *operand*.**substr**(position: number, length: number)
 
@@ -252,6 +274,7 @@ Extracts a substring from the operand.
 var ex = $('str').substr(1, 5);
 ex.compute({ str: 'Hello World' }).then(console.log); // => 'ello '
 ```
+
 
 *operand*.**extract**(re: string)
   
@@ -263,6 +286,7 @@ ex.compute({ str: 'kafka-0.7.2' }).then(console.log); // => '0.7.2'
 ex.compute({ str: 'Web 2.0' }).then(console.log); // => null
 ```
 
+
 *operand*.**concat**(...exs: any[])
 
 Performs a string concatenation operation on the operand and the given expressions.
@@ -273,12 +297,14 @@ var ex = r('[').concat($('str'), r(']'));
 ex.compute({ str: 'Hello World' }).then(console.log); // => '[Hello World]'
 ```
 
+
 *operand*.**lookup**(lookup: string)
 
 Performs a lookup within the specified namespace.
 
 
-## Bucketing
+### Number manipulation
+
 
 *operand*.**numberBucket**(size: number, offset: number = 0)
 
@@ -289,24 +315,67 @@ var ex = $('x').numberBucket(5);
 ex.compute({ x: 7 }).then(console.log); // => [5, 10)
 ```
 
-*operand*.**timeBucket**(duration: any, timezone: any = Timezone.UTC)
 
-Blah
+### Time manipulation
 
-```javascript
-var ex = $('x').is(5);
-```
 
-*operand*.**timePart**(part: string, timezone: any)
+*operand*.**timeBucket**(duration: any, timezone?: string)
 
-Blah
+Buckets the operand time to the nearest `duration` within the given `timezone`.
+Creates a TimeRange of size `duration`. 
 
 ```javascript
-var ex = $('x').is(5);
+var ex = $('time').timeBucket('P1D');
 ```
 
 
-## Split Apply Combine based transformations
+*operand*.**timeFloor**(duration: any, timezone?: string)
+
+Floors the operand time to the nearest `duration` within the given `timezone`.
+
+```javascript
+var ex = $('time').timeFloor('P1D');
+```
+
+
+*operand*.**timeShift**(duration: any, step: number, timezone?: string)
+
+Shifts the operand time by `duration` * `step` within the given `timezone`.
+
+```javascript
+var ex = $('time').timeShift('P1D', -2);
+```
+
+
+*operand*.**timeRange**(duration: any, step: number, timezone?: string)
+
+Constructs a range with the operand time as one end point and the other endpoint determined by shifting the provided time by `duration` * `step` within the given `timezone`.
+Creates a TimeRange of size `duration` * `step`.
+
+```javascript
+var ex = $('time').timeRange('P1D', -2);
+```
+
+
+*operand*.**timePart**(part: string, timezone?: string)
+
+This will 'part' the operand into the (integer) number that represents what day of the year it is within the given `timezone`. 
+
+The possible part values are:
+
+* `SECOND_OF_MINUTE`, `SECOND_OF_HOUR`, `SECOND_OF_DAY`, `SECOND_OF_WEEK`, `SECOND_OF_MONTH`, `SECOND_OF_YEAR`
+* `MINUTE_OF_HOUR`, `MINUTE_OF_DAY`, `MINUTE_OF_WEEK`, `MINUTE_OF_MONTH`, `MINUTE_OF_YEAR`
+* `HOUR_OF_DAY`, `HOUR_OF_WEEK`, `HOUR_OF_MONTH`, `HOUR_OF_YEAR`
+* `DAY_OF_WEEK`, `DAY_OF_MONTH`, `DAY_OF_YEAR`
+* `WEEK_OF_MONTH`, `WEEK_OF_YEAR`
+* `MONTH_OF_YEAR`
+
+```javascript
+var ex = $('time').timePart('DAY_OF_WEEK');
+```
+
+
+### Split Apply Combine based transformations
 
 Let's pretend we have this simple dataset:
 
@@ -319,6 +388,7 @@ var someDataset = Dataset.fromJS([
   { cut: 'Wow',   price: 100, time: new Date('2015-10-05T10:20:30Z') }
 ]);
 ```
+
 
 *operand*.**filter**(ex: any)
 
@@ -333,6 +403,7 @@ Dataset.fromJS([
   { cut: 'Good',  price: 300, time: new Date('2015-10-02T10:20:30Z') }
 ])
 ```
+
 
 *operand*.**split**(splits: any, name?: string, dataName?: string)
 
@@ -366,6 +437,7 @@ Dataset.fromJS([
 ])
 ```
 
+
 *operand*.**apply**(name: string, ex: any)
 
 Apply the given expression to every datum in the dataset saving the result as `name`.
@@ -382,6 +454,7 @@ Dataset.fromJS([
   { cut: 'Wow',   price: 100, DoublePrice: 200, time: new Date('2015-10-05T10:20:30Z') }
 ])
 ```
+
 
 *operand*.**sort**(ex: any, direction: string)
 
@@ -400,6 +473,7 @@ Dataset.fromJS([
 ])
 ```
 
+
 *operand*.**limit**(limit: int)
 
 Limit the operand dataset to the given positive integer.
@@ -415,7 +489,7 @@ Dataset.fromJS([
 ])
 ```
 
-## Aggregate expressions
+### Aggregate expressions
 
 Let's pretend we have this simple dataset:
 
@@ -429,6 +503,7 @@ var someDataset = Dataset.fromJS([
 ]);
 ```
 
+
 *operand*.**count**()
 
 Computes the count of the datums in the operand dataset
@@ -437,6 +512,7 @@ Computes the count of the datums in the operand dataset
 var ex = $('data').count();
 ex.compute({ data: someDataset }).then(console.log); // => 5
 ```
+
 
 *operand*.**sum**(ex: any)
 
@@ -447,6 +523,7 @@ var ex = $('data').sum($('price'));
 ex.compute({ data: someDataset }).then(console.log); // => 1084
 ```
 
+
 *operand*.**min**(ex: any)
 
 Computes the min of the given expression in the operand dataset
@@ -455,6 +532,7 @@ Computes the min of the given expression in the operand dataset
 var ex = $('data').min($('price'));
 ex.compute({ data: someDataset }).then(console.log); // => 100
 ```
+
 
 *operand*.**max**(ex: any)
 
@@ -465,6 +543,7 @@ var ex = $('data').max($('price'));
 ex.compute({ data: someDataset }).then(console.log); // => 400
 ```
 
+
 *operand*.**average**(ex: any)
 
 Computes the average of the given expression in the operand dataset
@@ -473,6 +552,7 @@ Computes the average of the given expression in the operand dataset
 var ex = $('data').average($('price'));
 ex.compute({ data: someDataset }).then(console.log); // => 216.8
 ```
+
 
 *operand*.**countDistinct**(ex: any)
 
@@ -483,6 +563,7 @@ var ex = $('data').countDistinct($('cut'));
 ex.compute({ data: someDataset }).then(console.log); // => 3
 ```
 
+
 *operand*.**quantile**(ex: any, quantile: number)
 
 Computes the quantile of the given expression in the operand dataset
@@ -490,6 +571,7 @@ Computes the quantile of the given expression in the operand dataset
 ```javascript
 var ex = $('data').quantile($('price'), 0.95);
 ```
+
 
 *operand*.**custom**(custom: string)
 

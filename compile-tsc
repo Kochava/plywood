@@ -12,16 +12,12 @@ node_modules/.bin/tsc --noImplicitAny --noEmitOnError --declaration --removeComm
   src/datatypes/range.ts \
   src/datatypes/numberRange.ts \
   src/datatypes/set.ts \
-  src/datatypes/shape.ts \
   src/datatypes/timeRange.ts \
-  src/datatypes/mark.ts \
   src/datatypes/dataset.ts \
   src/datatypes/external.ts \
   \
   src/external/druidExternal.ts \
   src/external/mySqlExternal.ts \
-  \
-  src/render/binder.ts \
   \
   src/expressions/baseExpression.ts \
   src/expressions/literalExpression.ts \
@@ -33,7 +29,6 @@ node_modules/.bin/tsc --noImplicitAny --noEmitOnError --declaration --removeComm
   src/actions/addAction.ts \
   src/actions/andAction.ts \
   src/actions/applyAction.ts \
-  src/actions/attachAction.ts \
   src/actions/averageAction.ts \
   src/actions/baseAction.ts \
   src/actions/concatAction.ts \
@@ -68,8 +63,10 @@ node_modules/.bin/tsc --noImplicitAny --noEmitOnError --declaration --removeComm
   src/actions/subtractAction.ts \
   src/actions/sumAction.ts \
   src/actions/timeBucketAction.ts \
-  src/actions/timeOffsetAction.ts \
+  src/actions/timeFloorAction.ts \
   src/actions/timePartAction.ts \
+  src/actions/timeRangeAction.ts \
+  src/actions/timeShiftAction.ts \
   \
   src/executor/basicExecutor.ts \
   \

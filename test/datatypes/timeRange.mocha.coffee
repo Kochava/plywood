@@ -6,7 +6,7 @@ plywood = require('../../build/plywood')
 { TimeRange, $, ply, r } = plywood
 
 describe "TimeRange", ->
-  it "passes higher object tests", ->
+  it "is immutable class", ->
     testImmutableClass(TimeRange, [
       {
         start: new Date('2015-01-26T04:54:10Z')
@@ -93,5 +93,5 @@ describe "TimeRange", ->
 
     it 'works on an interval with different bounds', ->
       expect(
-        TimeRange.fromJS({ start: '2015-01-26T00:00:00', end: '2015-01-27T00:00:00', bounds: '[]' }).toInterval()
-      ).to.deep.equal('2015-01-26/2015-01-27T00:00:01')
+        TimeRange.fromJS({ start: '2015-01-26T00:00:00', end: '2015-01-27T00:00:00', bounds: '(]' }).toInterval()
+      ).to.deep.equal('2015-01-26T00:00:00.001/2015-01-27T00:00:00.001')

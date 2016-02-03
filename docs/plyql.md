@@ -90,18 +90,18 @@ Note that the buckets are open closed (start <= x < end).
 
 Bucket the time into a bucket of size `duration` in the given `timezone`.
 
-Example: `TIME_BUCKET($time, 'P1D', 'America/Los_Angeles')`
+Example: `TIME_BUCKET(time, 'P1D', 'America/Los_Angeles')`
 
-This will bucket the `$time` variable into day chunks where days are defined in the `America/Los_Angeles` timezone.
+This will bucket the `time` variable into day chunks where days are defined in the `America/Los_Angeles` timezone.
 
 
 **TIME_PART**(operand, part, timezone)
 
 Part the time into the given repeating buckets.
 
-Example: `TIME_PART($time, 'DAY_OF_YEAR', 'America/Los_Angeles')`
+Example: `TIME_PART(time, 'DAY_OF_YEAR', 'America/Los_Angeles')`
 
-This will part the `$time` variable into the (integer) number that represents what day of the year it is.
+This will part the `time` variable into the (integer) number that represents what day of the year it is.
 
 The possible part values are:
 
@@ -111,6 +111,35 @@ The possible part values are:
 * `DAY_OF_WEEK`, `DAY_OF_MONTH`, `DAY_OF_YEAR`
 * `WEEK_OF_MONTH`, `WEEK_OF_YEAR`
 * `MONTH_OF_YEAR`
+
+
+**TIME_FLOOR**(operand, duration, timezone)
+
+Floor the time to the nearest `duration` in the given `timezone`.
+
+Example: `TIME_FLOOR(time, 'P1D', 'America/Los_Angeles')`
+
+This will floor the `time` variable to the start of day, where days are defined in the `America/Los_Angeles` timezone.
+
+
+**TIME_SHIFT**(operand, duration, step, timezone)
+
+Shift the time forwards by `duration` * `step` in the given `timezone`.
+`step` may be negative.
+
+Example: `TIME_SHIFT(time, 'P1D', -2, 'America/Los_Angeles')`
+
+This will shift the `time` variable two days back in time, where days are defined in the `America/Los_Angeles` timezone.
+
+
+**TIME_RANGE**(operand, duration, step, timezone)
+
+Create a range form `time` and the point that is `duration` * `step` away from `time` in the given `timezone`.
+`step` may be negative.
+
+Example: `TIME_RANGE(time, 'P1D', -2, 'America/Los_Angeles')`
+
+This will shift the `time` variable two days back in time, where days are defined in the `America/Los_Angeles` timezone and create a range of time-2*P1D -> time
 
 
 **SUBSTR**(*str*, *pos*, *len*)

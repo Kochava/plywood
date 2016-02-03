@@ -154,13 +154,6 @@ module Plywood {
     return LiteralExpression.fromJS({ op: 'literal', value: value });
   }
 
-  export function mark(selector: string, prop: Lookup<any> = {}): Mark {
-    return new Mark({
-      selector,
-      prop
-    })
-  }
-
   function chainVia(op: string, expressions: Expression[], zero: Expression): Expression {
     switch (expressions.length) {
       case 0: return zero;
@@ -211,7 +204,7 @@ module Plywood {
      */
     static parseSQL(str: string): SQLParse {
       try {
-        return sqlParser.parse(str);
+        return plyqlParser.parse(str);
       } catch (e) {
         // Re-throw to add the stacktrace
         throw new Error('SQL parse error: ' + e.message + ' on `' + str + '`');
@@ -882,27 +875,41 @@ module Plywood {
       return this.performAction(new LookupAction({ lookup: getString(lookup) }));
     }
 
-    // Bucketing
+    // Number manipulation
 
     public numberBucket(size: number, offset: number = 0): ChainExpression {
       return this.performAction(new NumberBucketAction({ size: getNumber(size), offset: getNumber(offset) }));
     }
 
-    public timeBucket(duration: any, timezone: any = Timezone.UTC): ChainExpression {
+    // Time manipulation
+
+    public timeBucket(duration: any, timezone?: any): ChainExpression {
       if (!Duration.isDuration(duration)) duration = Duration.fromJS(getString(duration));
-      if (!Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
-      return this.performAction(new TimeBucketAction({ duration: duration, timezone: timezone }));
+      if (timezone && !Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
+      return this.performAction(new TimeBucketAction({ duration, timezone }));
     }
 
-    public timePart(part: string, timezone: any): ChainExpression {
-      if (!Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
-      return this.performAction(new TimePartAction({ part: getString(part), timezone: timezone }));
+    public timeFloor(duration: any, timezone?: any): ChainExpression {
+      if (!Duration.isDuration(duration)) duration = Duration.fromJS(getString(duration));
+      if (timezone && !Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
+      return this.performAction(new TimeFloorAction({ duration, timezone }));
     }
 
-    public timeOffset(duration: any, timezone: any): ChainExpression {
+    public timeShift(duration: any, step: number, timezone?: any): ChainExpression {
       if (!Duration.isDuration(duration)) duration = Duration.fromJS(getString(duration));
-      if (!Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
-      return this.performAction(new TimeOffsetAction({ duration: duration, timezone: timezone }));
+      if (timezone && !Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
+      return this.performAction(new TimeShiftAction({ duration, step: getNumber(step), timezone }));
+    }
+
+    public timeRange(duration: any, step: number, timezone?: any): ChainExpression {
+      if (!Duration.isDuration(duration)) duration = Duration.fromJS(getString(duration));
+      if (timezone && !Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
+      return this.performAction(new TimeRangeAction({ duration, step: getNumber(step), timezone }));
+    }
+
+    public timePart(part: string, timezone?: any): ChainExpression {
+      if (timezone && !Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
+      return this.performAction(new TimePartAction({ part: getString(part), timezone }));
     }
 
     // Split Apply Combine based transformations
@@ -1007,13 +1014,6 @@ module Plywood {
     public join(ex: any): ChainExpression {
       if (!Expression.isExpression(ex)) ex = Expression.fromJSLoose(ex);
       return this.performAction(new JoinAction({ expression: ex }));
-    }
-
-    public attach(selector: string, prop: Lookup<any>) {
-      return this.performAction(new AttachAction({
-        selector,
-        prop
-      }));
     }
 
     /**
@@ -1128,16 +1128,6 @@ module Plywood {
       );
     }
 
-
-    public _collectBindSpecs(bindSpecs: BindSpec[], selectionDepth: Lookup<number>, depth: number, applyName: string, data: string, key: string): void {
-    }
-
-    public getBindSpecs(): BindSpec[] {
-      var bindSpecs: BindSpec[] = [];
-      this._collectBindSpecs(bindSpecs, {}, 0, null, null, null);
-      return bindSpecs;
-    }
-
     // ---------------------------------------------------------
     // Evaluation
 
@@ -1167,18 +1157,12 @@ module Plywood {
     /**
      * Computes a general asynchronous expression
      * @param context The context within which to compute the expression
-     * @param selector The selector where to attach the visualization
      */
-    public compute(context: Datum = {}, selector: string = null): Q.Promise<any> {
+    public compute(context: Datum = {}): Q.Promise<any> {
       if (!datumHasExternal(context) && !this.hasExternal()) {
         return Q.fcall(() => {
           var referenceChecked = this.referenceCheck(context);
-          var value = referenceChecked.getFn()(context, null);
-          if (selector && value instanceof Dataset) {
-            var selection = d3.select(selector);
-            binder(selection, value, referenceChecked.getBindSpecs());
-          }
-          return value;
+          return referenceChecked.getFn()(context, null);
         });
       }
       var ex = this;

@@ -4,8 +4,8 @@ plywood = require('../../build/plywood')
 { Expression, Dataset, $, ply, r } = plywood
 
 describe "stringification", ->
-  it "works in advanced case", ->
 
+  it "works in advanced case", ->
     ex = ply()
       .apply("diamonds", $('diamonds').filter($("color").is('D')))
       .apply('Count', $('diamonds').count())
@@ -58,3 +58,20 @@ describe "stringification", ->
             )
         )
     """)
+
+  it "works with lookup", ->
+    ex = $('diamonds').split("$cut.lookup('hello_lookup')", 'CutLookup')
+
+    expect(ex.toString(2)).to.equal("$diamonds.split($cut.lookup(hello_lookup),CutLookup,diamonds)")
+
+  it "works with timePart", ->
+    ex = $('time').timePart('DAY_OF_WEEK')
+    expect(ex.toString(2)).to.equal("$time.timePart(DAY_OF_WEEK)")
+
+  it "works with timeShift", ->
+    ex = $('time').timeShift('P1D', 2)
+    expect(ex.toString(2)).to.equal("$time.timeShift(P1D,2)")
+
+  it "works with timeRange", ->
+    ex = $('time').timeRange('P1D', 2)
+    expect(ex.toString(2)).to.equal("$time.timeRange(P1D,2)")

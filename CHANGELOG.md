@@ -1,5 +1,49 @@
 # Change log
 
+## 0.8.6
+
+- Add `timeRange` action (`TIME_RANGE` in PlyQL) - not supported by DruidExternal yet
+
+## 0.8.5
+
+- Add `timeFloor` action (`TIME_FLOOR` in PlyQL) - not supported by DruidExternal yet
+- Rename unused `offsetTime` action to `timeShift` (`TIME_SHIFT` in PlyQL) and add `step` parameter - not supported by DruidExternal yet
+- Fixed how `concat` works on nulls to return null
+- Added `.isnt` and `.negate` to expression parsing grammar (they were mistakenly excluded) 
+- Added `MATCH` function to PlyQL 
+- Timezone parameter is now optional in all the `time*` functions in Plywood and PlyQL
+- Added `NOW()` to PlyQL
+- Better DruidExternal column introspection error detection
+
+## 0.8.4
+
+- Allow parsing of `DESCRIBE` verb for PlyQL
+
+## 0.8.3
+
+- Changed `avoidSegmentMetadata` to `introspectionStrategy: 'datasource-get'` defaults to `'segment-metadata-fallback'`
+
+## 0.8.2
+
+- Brand new introspection code for `druidExternal` no more `useSegmentMetadata` flag instead there is a `avoidSegmentMetadata` flag
+- Fix `.lookup()` stringification
+- PlyQL comments are treated like they are in MySQL: `--` needs to be followed by a space, `#` starts a comment,
+  and `/* ... */` inline and multiline comments are supported
+
+## 0.8.1
+
+- Removing d3 dependency and minimizing code size
+
+## 0.7.30
+
+- Fixed interval conversion to add a millisecond and not a second  
+- Allow for filtering on exact date in DruidExternal
+- Fixed missing error message when invalid interval is given
+
+## 0.7.29
+
+- In DruidExternal a time attribute will no longer collide with an existing attribute 
+
 ## 0.7.28
 
 - Added ability to write `$('time').in('2015-03-03Z', '2015-10-10Z')`

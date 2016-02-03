@@ -1,6 +1,8 @@
 module Plywood {
   var mySQLDialect = new MySQLDialect();
 
+  const DEFAULT_TIMEZONE = Timezone.UTC;
+
   interface SQLDescribeRow {
     Field: string;
     Type: string;
@@ -16,7 +18,7 @@ module Plywood {
         var lastAction = splitExpression.lastAction();
 
         if (lastAction instanceof TimeBucketAction) {
-          return External.timeRangeInflaterFactory(label, lastAction.duration, lastAction.timezone);
+          return External.timeRangeInflaterFactory(label, lastAction.duration, lastAction.timezone || DEFAULT_TIMEZONE);
         }
 
         if (lastAction instanceof NumberBucketAction) {
@@ -189,11 +191,8 @@ module Plywood {
       };
     }
 
-    public getIntrospectQueryAndPostProcess(): IntrospectQueryAndPostProcess<string> {
-      return {
-        query: "DESCRIBE `" + this.table + "`",
-        postProcess: postProcessIntrospect
-      };
+    public getIntrospectAttributes(): Q.Promise<Attributes> {
+      return this.requester({ query: "DESCRIBE `" + this.table + "`", }).then(postProcessIntrospect);
     }
   }
 

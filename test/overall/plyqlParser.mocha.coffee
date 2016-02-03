@@ -29,8 +29,23 @@ describe "SQL parser", ->
       expect(parse.verb).to.equal(null)
       expect(parse.expression.toJS()).to.deep.equal(ex2.toJS())
 
+    it "should handle --", ->
+      parse = Expression.parseSQL("x--3")
 
-  describe "non SELECT expression", ->
+      ex2 = $('x').subtract(-3)
+
+      expect(parse.verb).to.equal(null)
+      expect(parse.expression.toJS()).to.deep.equal(ex2.toJS())
+
+    it "works with NOW()", ->
+      parse = Expression.parseSQL("NOW( )")
+
+      js = parse.expression.toJS();
+      expect(js.op).to.equal('literal')
+      expect(Math.abs(js.value.valueOf() - Date.now())).to.be.lessThan(1000)
+
+
+  describe "other query types", ->
     it "works with UPDATE expression", ->
       parse = Expression.parseSQL("UPDATE this is the end of the road")
 
@@ -39,7 +54,7 @@ describe "SQL parser", ->
         rest: 'this is the end of the road'
       })
 
-    it "works with SET expression", ->
+    it "works with SET query", ->
       parse = Expression.parseSQL("SET this is the end of the road")
 
       expect(parse).to.deep.equal({
@@ -47,6 +62,23 @@ describe "SQL parser", ->
         rest: 'this is the end of the road'
       })
 
+
+  describe "DESCRIBE", ->
+    it "works with DESCRIBE query", ->
+      parse = Expression.parseSQL("DESCRIBE wikipedia")
+
+      expect(parse).to.deep.equal({
+        verb: 'DESCRIBE'
+        table: 'wikipedia'
+      })
+
+    it "works with another DESCRIBE query", ->
+      parse = Expression.parseSQL("DESCRIBE `my-table` ; ")
+
+      expect(parse).to.deep.equal({
+        verb: 'DESCRIBE'
+        table: 'my-table'
+      })
 
   describe "SELECT", ->
     it "should fail on a expression with no columns", ->
@@ -101,6 +133,7 @@ describe "SQL parser", ->
         COUNT(*) AS Count2,
         COUNT(1) AS Count3,
         COUNT(`visitor`) AS Count4,
+        MATCH(`visitor`, "[0-9A-F]") AS 'Match',
         SUM(added) AS 'TotalAdded',
         '2014-01-02' AS 'Date',
         SUM(`wiki`.`added`) / 4 AS TotalAddedOver4,
@@ -111,6 +144,10 @@ describe "SQL parser", ->
         COUNT_DISTINCT(visitor) AS 'Unique1',
         COUNT(DISTINCT visitor) AS 'Unique2',
         COUNT(DISTINCT(visitor)) AS 'Unique3',
+        TIME_BUCKET(time, PT1H) AS 'TimeBucket',
+        TIME_FLOOR(time, PT1H) AS 'TimeFloor',
+        TIME_SHIFT(time, PT1H, 3) AS 'TimeShift3',
+        TIME_RANGE(time, PT1H, 3) AS 'TimeRange3',
         CUSTOM('blah') AS 'Custom1'
         FROM `wiki`
         WHERE `language`="en"  ;  -- This is just some comment
@@ -122,6 +159,7 @@ describe "SQL parser", ->
         .apply('Count2', '$data.count()')
         .apply('Count3', '$data.filter(1 != null).count()')
         .apply('Count4', '$data.filter($visitor != null).count()')
+        .apply('Match', $('visitor').match("[0-9A-F]"))
         .apply('TotalAdded', '$data.sum($added)')
         .apply('Date', new Date('2014-01-02T00:00:00.000Z'))
         .apply('TotalAddedOver4', '$data.sum($added) / 4')
@@ -132,6 +170,10 @@ describe "SQL parser", ->
         .apply('Unique1', $('data').countDistinct('$visitor'))
         .apply('Unique2', $('data').countDistinct('$visitor'))
         .apply('Unique3', $('data').countDistinct('$visitor'))
+        .apply('TimeBucket', $('time').timeBucket('PT1H'))
+        .apply('TimeFloor', $('time').timeFloor('PT1H'))
+        .apply('TimeShift3', $('time').timeShift('PT1H', 3))
+        .apply('TimeRange3', $('time').timeRange('PT1H', 3))
         .apply('Custom1', $('data').custom('blah'))
 
       expect(parse.expression.toJS()).to.deep.equal(ex2.toJS())
@@ -141,12 +183,39 @@ describe "SQL parser", ->
         SELECT
         SUM(added) AS TotalAdded
         FROM `wiki`
-        WHERE `language`="en"    -- This is just some comment
+        WHERE `language`="en"
+        """)
+
+      ex2 = ply()
+      .apply('data', '$wiki.filter($language == "en")')
+      .apply('TotalAdded', '$data.sum($added)')
+
+      expect(parse.expression.toJS()).to.deep.equal(ex2.toJS())
+
+    it "should work with all sorts of comments", ->
+      parse = Expression.parseSQL("""
+        /*
+        Multiline comments
+        can exist
+        at the start ...
+        */
+        SELECT
+        SUM(added)--1 AS /* Inline comment */ TotalAdded -- This is just some comment
+        FROM `wiki` # Another comment
+        /*
+        ... and in the
+        middle...
+        */
+        WHERE `language`="en"
+        /*
+        ... and at the
+        end.
+        */
         """)
 
       ex2 = ply()
         .apply('data', '$wiki.filter($language == "en")')
-        .apply('TotalAdded', '$data.sum($added)')
+        .apply('TotalAdded', '$data.sum($added) - -1')
 
       expect(parse.expression.toJS()).to.deep.equal(ex2.toJS())
 
