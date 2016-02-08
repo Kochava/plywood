@@ -843,12 +843,13 @@ return (start < 0 ?'-':'') + parts.join('.');
         var splitActions = splitExpression.actions;
         if (this.isTimeRef(splitExpression.expression) && splitActions.length === 1 && splitActions[0].action === 'timeBucket') {
 
-          var { duration, timezone } = <TimeBucketAction>splitActions[0];
+          var { duration, timezone, origin } = <TimeBucketAction>splitActions[0];
           return {
             granularity: {
               type: "period",
               period: duration.toString(),
-              timeZone: timezone.toString()
+              timeZone: timezone.toString(),
+              origin: origin ? origin.toISOString() : undefined
             },
             inflater: External.timeRangeInflaterFactory(label, duration, timezone)
           };

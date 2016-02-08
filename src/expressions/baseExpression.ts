@@ -883,10 +883,11 @@ module Plywood {
 
     // Time manipulation
 
-    public timeBucket(duration: any, timezone?: any): ChainExpression {
+    public timeBucket(duration: any, timezone?: any, origin?: any): ChainExpression {
       if (!Duration.isDuration(duration)) duration = Duration.fromJS(getString(duration));
       if (timezone && !Timezone.isTimezone(timezone)) timezone = Timezone.fromJS(getString(timezone));
-      return this.performAction(new TimeBucketAction({ duration, timezone }));
+      if (origin && (!(origin instanceof Date))) origin = new Date(origin);
+      return this.performAction(new TimeBucketAction({ duration, timezone, origin }));
     }
 
     public timeFloor(duration: any, timezone?: any): ChainExpression {
