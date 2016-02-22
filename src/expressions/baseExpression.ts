@@ -875,6 +875,10 @@ module Plywood {
       return this.performAction(new LookupAction({ lookup: getString(lookup) }));
     }
 
+    public map(map: Lookup<any>): ChainExpression {
+      return this.performAction(new MapAction({ map: map }));
+    }
+
     // Number manipulation
 
     public numberBucket(size: number, offset: number = 0): ChainExpression {

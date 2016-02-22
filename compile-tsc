@@ -49,6 +49,7 @@ node_modules/.bin/tsc --noImplicitAny --noEmitOnError --declaration --removeComm
   src/actions/lookupAction.ts \
   src/actions/limitAction.ts \
   src/actions/matchAction.ts \
+  src/actions/mapAction.ts \
   src/actions/maxAction.ts \
   src/actions/minAction.ts \
   src/actions/multiplyAction.ts \

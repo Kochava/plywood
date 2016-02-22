@@ -967,6 +967,17 @@ return (start < 0 ?'-':'') + parts.join('.');
           };
         }
 
+        if (action instanceof MapAction) {
+          return {
+            type: "lookup",
+            lookup: {
+              type: "map",
+              map: action.map
+            },
+            injective: false
+          };
+        }
+
         if (action instanceof TimeBucketAction) {
           var format = TIME_BUCKET_FORMAT[action.duration.toString()];
           if (!format) throw new Error(`unsupported part in timeBucket expression ${action.duration.toString()}`);
@@ -1047,7 +1058,7 @@ return (start < 0 ?'-':'') + parts.join('.');
         };
       }
 
-      if (splitExpression.type === 'BOOLEAN' || splitExpression.type === 'STRING') {
+      if (splitExpression.type === 'BOOLEAN' || splitExpression.type === 'STRING' || splitExpression.type === 'NUMBER') {
         return {
           dimension,
           inflater: simpleInflater
@@ -1671,13 +1682,23 @@ return (start < 0 ?'-':'') + parts.join('.');
               if (sortAction) {
                 metric = (<RefExpression>sortAction.expression).name;
                 if (this.sortOnLabel()) {
-                  metric = { type: 'lexicographic' };
+                  var splitType = this.split.firstSplitExpression().type;
+                  if (splitType === 'NUMBER' || splitType === 'NUMBER_RANGE') {
+                    metric = { type: 'alphaNumeric' };
+                  } else {
+                    metric = { type: 'lexicographic' };
+                  }
                 }
                 if (sortAction.direction === 'ascending') {
                   metric = { type: "inverted", metric: metric };
                 }
               } else {
-                metric = { type: 'lexicographic' };
+                var splitType = this.split.firstSplitExpression().type;
+                if (splitType === 'NUMBER' || splitType === 'NUMBER_RANGE') {
+                  metric = { type: 'alphaNumeric' };
+                } else {
+                  metric = { type: 'lexicographic' };
+                }
               }
               druidQuery.metric = metric;
               if (this.limit) {
