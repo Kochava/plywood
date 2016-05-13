@@ -56,6 +56,7 @@ node_modules/.bin/tsc --noImplicitAny --noEmitOnError --declaration --removeComm
   src/actions/notAction.ts \
   src/actions/numberBucketAction.ts \
   src/actions/orAction.ts \
+  src/actions/lowerAction.ts \
   src/actions/partialAction.ts \
   src/actions/quantileAction.ts \
   src/actions/sortAction.ts \

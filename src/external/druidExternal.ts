@@ -956,6 +956,12 @@ return (start < 0 ?'-':'') + parts.join('.');
           };
         }
 
+        if (action instanceof LowerAction) {
+          return {
+            type: "lower"
+          };
+        }
+
         if (action instanceof LookupAction) {
           return {
             type: "lookup",
